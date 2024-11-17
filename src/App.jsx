@@ -102,6 +102,18 @@ const App = () => {
       )
   }
 
+  const updateBlog = (updatedBlog) => {
+    
+    // updating with a blog object
+    // if successful, blog array will be updated with an updated blog
+    blogService
+      .update(updatedBlog.id, updatedBlog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : returnedBlog ))
+        alertUser("one like added", "notification")
+        console.log(returnedBlog)
+  })
+  }
   
   return (
     <div>
@@ -139,7 +151,7 @@ const App = () => {
 
       <h2>bloglist</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleUpdate={updateBlog} />
       )}
 
     </div>
