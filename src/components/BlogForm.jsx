@@ -3,9 +3,8 @@ import { useState } from 'react'
 
 
 // form for adding a blog to the list and db
-const BlogForm = ({handleSubmit, handleTitleChange, handleAuthorChange,
-                    handleUrlChange, title, author, url}) => {
-/*    
+const BlogForm = ({createBlog}) => {
+   
 const [newTitle, setNewTitle] = useState('')
 const [newAuthor, setNewAuthor] = useState('')
 const [newUrl, setNewUrl] = useState('')
@@ -21,12 +20,11 @@ const addBlog = async (event) => {
       author: newAuthor,
       url: newUrl,
     }
+    createBlog(newBlog)
 
     // try to add new blog and update the state of blogs
     // notification of successful or unsuccessful operation
     try {
-      const returnedBlog = await blogService.create(newBlog)
-      setBlogs(blogs.concat(returnedBlog))
       //alertUser("new blog added", "notification")
     }
     catch (exception) {
@@ -34,29 +32,29 @@ const addBlog = async (event) => {
     }
 
 }
-*/
+
 return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={addBlog}>
       <div>
         title:
         <input
           type="text"
-          value={title}
-          onChange={handleTitleChange} />
+          value={newTitle}
+          onChange={({ target }) => setNewTitle(target.value)} />
       </div>
       <div>
         author:
         <input 
           type="text"
-          value={author}
-          onChange={handleAuthorChange} />
+          value={newAuthor}
+          onChange={({ target }) => setNewAuthor(target.value)} />
       </div>
       <div>
         url:
         <input 
           type="text"
-          value={url}
-          onChange={handleUrlChange}/>
+          value={newUrl}
+          onChange={({ target }) => setNewUrl(target.value)}/>
       </div>
       <button type="submit">create</button>
     </form>  
