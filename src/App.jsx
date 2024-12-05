@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
-import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -18,7 +17,7 @@ const App = () => {
   // fetching all the blogs first
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a,b) => b.likes - a.likes) )
     )
     console.log("hello")
   }, [])
@@ -63,6 +62,7 @@ const App = () => {
       })
         blogService.setToken(user.token)
         setUser(user)
+        console.log(user)
         setUsername('')
         setPassword('')
       } catch (exception) {
@@ -73,7 +73,7 @@ const App = () => {
   // logout handler
   // logged user is stored in local storage so we need to remove the user from there
   const handleLogout = (event) => {
-      
+    event.preventDefault()
     if(user) {
       alertUser("log out successful", "notification")
       console.log("logout")
@@ -89,7 +89,8 @@ const App = () => {
 
   // adding and creating blog 
   // this will be passed to the blog form component as props
-  const addBlog = (newBlog) => {
+  const createBlog = (newBlog) => {
+    
     // try to add new blog and update the state of blogs
     // notification of successful or unsuccessful operation
 
@@ -105,14 +106,35 @@ const App = () => {
   const updateBlog = (updatedBlog) => {
     
     // updating with a blog object
-    // if successful, blog array will be updated with an updated blog
+    // if successful, blog array will be updated with an updated object of the blog that was liked
     blogService
       .update(updatedBlog.id, updatedBlog)
       .then(returnedBlog => {
-        setBlogs(blogs.map(blog => blog.id !== updatedBlog.id ? blog : returnedBlog ))
+        const updatedBloglist = blogs.map(blog => blog.id !== updatedBlog.id ? blog : returnedBlog)
+        const sortedBloglist = updatedBloglist.sort((a,b) => b.likes - a.likes)
+        //setBlogs(sortedBloglist)
         alertUser("one like added", "notification")
-        console.log(returnedBlog)
+        console.log("returned blog", returnedBlog)
+        setBlogs(sortedBloglist)
   })
+  }
+
+  const deleteBlog = (blogToBeRemoved) => {
+    console.log(blogToBeRemoved)
+
+    if (window.confirm("do you want to delete blog")) {
+        blogService
+          .remove(blogToBeRemoved.id)
+          .then(
+               setBlogs(blogs.filter(blog => blog.id !== blogToBeRemoved.id))
+            )
+        alertUser("blog removed", "notification")
+    }
+    
+    else {
+      return
+    }
+
   }
   
   return (
@@ -122,6 +144,7 @@ const App = () => {
       <Notification message={notificationMessage} messageType={messageType} />
 
       {!user &&
+      <div>
       <Togglable buttonLabel='login'>
         <LoginForm
           username={username}
@@ -131,29 +154,18 @@ const App = () => {
           handleSubmit={handleLogin}
         />
       </Togglable>
-      }
-
-      {user && <div>
-         <p>{user.name} logged in
-          <button onClick={handleLogout}>logout</button></p>
-        </div>
-      }
-      
-      {user && <div>
-      <h2>create new</h2>
-      <Togglable buttonLabel='add blog' ref={blogFormRef}>
-          <BlogForm
-            createBlog={addBlog}>
-          </BlogForm>
-      </Togglable>
+      <BlogList blogs={blogs} handleUpdate={updateBlog} />
       </div>
       }
 
-      <h2>bloglist</h2>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleUpdate={updateBlog} />
-      )}
+      {user && 
+      <BlogList blogFormRef={blogFormRef} createBlog={createBlog} handleLogout={handleLogout} blogs={blogs} user={user} handleUpdate={updateBlog} handleDelete={deleteBlog} />
+      }
 
+
+      
+      
+  
     </div>
   )
 }

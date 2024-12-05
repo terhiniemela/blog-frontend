@@ -1,54 +1,70 @@
-import { useState, useEffect } from 'react'
 
-const Blog = ({ blog, handleUpdate }) => {
+import { useState } from 'react'
+
+const Blog = ({blog, user, handleUpdate, handleDelete}) => {
 
 const [viewMoreOn, setViewMoreOn] = useState(false)
+
 const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
+   }
+
+const handleViewClick = (event) => {
+    event.preventDefault()
+    console.log("blog:", blog)
+    console.log("user:", user)
+    setViewMoreOn(true)
+}
+  
+const handleHideClick = (event) => {
+    setViewMoreOn(false)
   }
 
-const handleViewClick = () => {
-  setViewMoreOn(true)
+const handleLikeClick = (event) => {
+   console.log(blog)
+   event.preventDefault()
+  
+    const updatedBlog = {
+      id: blog.id,
+      likes: blog.likes+1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url,
+      user: blog.user.id
+    }
+    console.log(updatedBlog)
+  
+    handleUpdate(updatedBlog)
 }
 
-const handleHideClick = () => {
-  setViewMoreOn(false)
-}
+const handleDeleteClick = (event) => {
 
-const handleLikeClick = () => {
-  console.log(blog)
-  const updatedBlog = {
-    id: blog.id,
-    likes: blog.likes+1,
-    author: blog.author,
-    title: blog.title,
-    url: blog.url
+    event.preventDefault()
+    handleDelete(blog)
   }
-  console.log(updatedBlog)
-
-  handleUpdate(updatedBlog)
-}
 
 if (viewMoreOn) {
     return (
     <div style={blogStyle}>
         <div>
-          <p>{blog.title}</p>
+          <p>{blog.title} {blog.author}<button onClick={handleHideClick}>hide</button></p>
           <p>{blog.url}</p>
           <p>likes:  
             {blog.likes}
             <button onClick={handleLikeClick}>like</button>
           </p>
-          <p>{blog.author}</p>
-          <button onClick={handleHideClick}>hide</button>
+          <p>{blog.user.name}</p>
+          {user && user.username === blog.user.username &&
+          <p><button onClick={handleDeleteClick}>delete</button></p>
+          }
         </div>
     </div>
   )}
-  return (
+return (
     <div style={blogStyle}>
         <div>
           {blog.title} {blog.author}
@@ -58,5 +74,6 @@ if (viewMoreOn) {
   )
 
  }
+
 
 export default Blog
