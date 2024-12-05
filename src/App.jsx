@@ -7,19 +7,19 @@ import loginService from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [messageType, setMessageType] = useState('')
   const blogFormRef = useRef()
-  
+
   // fetching all the blogs first
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs.sort((a,b) => b.likes - a.likes) )
     )
-    console.log("hello")
+    console.log('hello')
   }, [])
 
   // fetching user data from local storage if it exists
@@ -29,13 +29,13 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
-      alertUser("user logged in", "notification")
+      alertUser('user logged in', 'notification')
     }
   }, [])
 
   // alert user with a notification
   const alertUser = (message, type) => {
-    console.log("in alertuser")
+    console.log('in alertuser')
     setMessageType(type)
     setNotificationMessage(message)
     setTimeout(() => {
@@ -50,23 +50,23 @@ const App = () => {
     console.log('logging in with', username, password)
 
     if (!username || !password) {
-      console.log("username or password missing")
-      alertUser("username missing or pw", "error")
+      console.log('username or password missing')
+      alertUser('username missing or pw', 'error')
       setUsername('')
       setPassword('')
     }
 
     try {
-        const user = await loginService.login({
-          username, password,
+      const user = await loginService.login({
+        username, password,
       })
-        blogService.setToken(user.token)
-        setUser(user)
-        console.log(user)
-        setUsername('')
-        setPassword('')
-      } catch (exception) {
-        console.log("error")
+      blogService.setToken(user.token)
+      setUser(user)
+      console.log(user)
+      setUsername('')
+      setPassword('')
+    } catch (exception) {
+      console.log('error')
     }
   }
 
@@ -75,22 +75,22 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     if(user) {
-      alertUser("log out successful", "notification")
-      console.log("logout")
+      alertUser('log out successful', 'notification')
+      console.log('logout')
       window.localStorage.removeItem('loggedBlogAppUser')
       setUser(null)
       setUsername('')
       setPassword('')
     }
     else {
-      alertUser("no one logged in", "error")
+      alertUser('no one logged in', 'error')
     }
   }
 
-  // adding and creating blog 
+  // adding and creating blog
   // this will be passed to the blog form component as props
   const createBlog = (newBlog) => {
-    
+
     // try to add new blog and update the state of blogs
     // notification of successful or unsuccessful operation
 
@@ -99,12 +99,12 @@ const App = () => {
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         blogFormRef.current.toggleVisibility()
-        alertUser("new blog added", "notification")}
+        alertUser('new blog added', 'notification')}
       )
   }
 
   const updateBlog = (updatedBlog) => {
-    
+
     // updating with a blog object
     // if successful, blog array will be updated with an updated object of the blog that was liked
     blogService
@@ -113,30 +113,30 @@ const App = () => {
         const updatedBloglist = blogs.map(blog => blog.id !== updatedBlog.id ? blog : returnedBlog)
         const sortedBloglist = updatedBloglist.sort((a,b) => b.likes - a.likes)
         //setBlogs(sortedBloglist)
-        alertUser("one like added", "notification")
-        console.log("returned blog", returnedBlog)
+        alertUser('one like added', 'notification')
+        console.log('returned blog', returnedBlog)
         setBlogs(sortedBloglist)
-  })
+      })
   }
 
   const deleteBlog = (blogToBeRemoved) => {
     console.log(blogToBeRemoved)
 
-    if (window.confirm("do you want to delete blog")) {
-        blogService
-          .remove(blogToBeRemoved.id)
-          .then(
-               setBlogs(blogs.filter(blog => blog.id !== blogToBeRemoved.id))
-            )
-        alertUser("blog removed", "notification")
+    if (window.confirm('do you want to delete blog')) {
+      blogService
+        .remove(blogToBeRemoved.id)
+        .then(
+          setBlogs(blogs.filter(blog => blog.id !== blogToBeRemoved.id))
+        )
+      alertUser('blog removed', 'notification')
     }
-    
+
     else {
       return
     }
 
   }
-  
+
   return (
     <div>
       <h2>blogs</h2>
@@ -145,27 +145,22 @@ const App = () => {
 
       {!user &&
       <div>
-      <Togglable buttonLabel='login'>
-        <LoginForm
-          username={username}
-          password={password}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-          handleSubmit={handleLogin}
-        />
-      </Togglable>
-      <BlogList blogs={blogs} handleUpdate={updateBlog} />
+        <Togglable buttonLabel='login'>
+          <LoginForm
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+            handleSubmit={handleLogin}
+            username={username}
+            password={password}
+          />
+        </Togglable>
+        <BlogList blogs={blogs} handleUpdate={updateBlog} />
       </div>
       }
 
-      {user && 
+      {user &&
       <BlogList blogFormRef={blogFormRef} createBlog={createBlog} handleLogout={handleLogout} blogs={blogs} user={user} handleUpdate={updateBlog} handleDelete={deleteBlog} />
       }
-
-
-      
-      
-  
     </div>
   )
 }

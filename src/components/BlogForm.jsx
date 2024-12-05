@@ -1,16 +1,16 @@
 import { useState } from 'react'
-
+import PropTypes from 'prop-types'
 
 // form for adding a blog to the list and db
-const BlogForm = ({createBlog}) => {
-   
-const [newTitle, setNewTitle] = useState('')
-const [newAuthor, setNewAuthor] = useState('')
-const [newUrl, setNewUrl] = useState('')
+const BlogForm = ({ createBlog }) => {
 
-// adding and creating blog
+  const [newTitle, setNewTitle] = useState('')
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('')
 
-const addBlog = async (event) => {
+  // adding and creating blog
+
+  const addBlog = async (event) => {
     event.preventDefault()
 
     // data for new blog
@@ -30,9 +30,9 @@ const addBlog = async (event) => {
       //alertUser("error adding blog", "error")
     }
 
-}
+  }
 
-return (
+  return (
     <form onSubmit={addBlog}>
       <div>
         title:
@@ -43,21 +43,25 @@ return (
       </div>
       <div>
         author:
-        <input 
+        <input
           type="text"
           value={newAuthor}
           onChange={({ target }) => setNewAuthor(target.value)} />
       </div>
       <div>
         url:
-        <input 
+        <input
           type="text"
           value={newUrl}
           onChange={({ target }) => setNewUrl(target.value)}/>
       </div>
       <button type="submit">create</button>
-    </form>  
+    </form>
   )
 }
 
-  export default BlogForm
+BlogForm.PropTypes = {
+  createBlog: PropTypes.func.isRequired
+}
+
+export default BlogForm

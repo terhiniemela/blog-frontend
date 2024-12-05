@@ -1,33 +1,34 @@
 
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 
-const Blog = ({blog, user, handleUpdate, handleDelete}) => {
+const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
 
-const [viewMoreOn, setViewMoreOn] = useState(false)
+  const [viewMoreOn, setViewMoreOn] = useState(false)
 
-const blogStyle = {
+  const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-   }
+  }
 
-const handleViewClick = (event) => {
+  const handleViewClick = (event) => {
     event.preventDefault()
-    console.log("blog:", blog)
-    console.log("user:", user)
+    console.log('blog:', blog)
+    console.log('user:', user)
     setViewMoreOn(true)
-}
-  
-const handleHideClick = (event) => {
+  }
+
+  const handleHideClick = () => {
     setViewMoreOn(false)
   }
 
-const handleLikeClick = (event) => {
-   console.log(blog)
-   event.preventDefault()
-  
+  const handleLikeClick = (event) => {
+    console.log(blog)
+    event.preventDefault()
+
     const updatedBlog = {
       id: blog.id,
       likes: blog.likes+1,
@@ -37,23 +38,23 @@ const handleLikeClick = (event) => {
       user: blog.user.id
     }
     console.log(updatedBlog)
-  
-    handleUpdate(updatedBlog)
-}
 
-const handleDeleteClick = (event) => {
+    handleUpdate(updatedBlog)
+  }
+
+  const handleDeleteClick = (event) => {
 
     event.preventDefault()
     handleDelete(blog)
   }
 
-if (viewMoreOn) {
+  if (viewMoreOn) {
     return (
-    <div style={blogStyle}>
+      <div style={blogStyle}>
         <div>
           <p>{blog.title} {blog.author}<button onClick={handleHideClick}>hide</button></p>
           <p>{blog.url}</p>
-          <p>likes:  
+          <p>likes:
             {blog.likes}
             <button onClick={handleLikeClick}>like</button>
           </p>
@@ -62,18 +63,22 @@ if (viewMoreOn) {
           <p><button onClick={handleDeleteClick}>delete</button></p>
           }
         </div>
-    </div>
-  )}
-return (
+      </div>
+    )}
+  return (
     <div style={blogStyle}>
-        <div>
-          {blog.title} {blog.author}
-          <button onClick={handleViewClick}>view</button>
-        </div>
+      <div>
+        {blog.title} {blog.author}
+        <button onClick={handleViewClick}>view</button>
+      </div>
     </div>
   )
 
- }
+}
 
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleUpdate: PropTypes.func.isRequired
+}
 
 export default Blog
