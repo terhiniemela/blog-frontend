@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
 
+  // view more off by default
   const [viewMoreOn, setViewMoreOn] = useState(false)
 
   const blogStyle = {
@@ -50,27 +51,25 @@ const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
 
   if (viewMoreOn) {
     return (
-      <div style={blogStyle}>
-        <div>
-          <p>{blog.title} {blog.author}<button onClick={handleHideClick}>hide</button></p>
-          <p>{blog.url}</p>
-          <p>likes:
-            {blog.likes}
-            <button onClick={handleLikeClick}>like</button>
-          </p>
-          <p>{blog.user.name}</p>
-          {user && user.username === blog.user.username &&
+      <div style={blogStyle} className='.ViewMore'>
+        <p id='title'>{blog.title}</p>
+        <p>{blog.author}</p>
+        <p><button onClick={handleHideClick}>hide</button></p>
+        <p>{blog.url}</p>
+        <p>likes:
+          {blog.likes}
+          <button onClick={handleLikeClick}>like</button>
+        </p>
+        <p>{blog.user.name}</p>
+        {user && user.username === blog.user.username &&
           <p><button onClick={handleDeleteClick}>delete</button></p>
-          }
-        </div>
+        }
       </div>
     )}
   return (
-    <div style={blogStyle}>
-      <div>
-        {blog.title} {blog.author}
-        <button onClick={handleViewClick}>view</button>
-      </div>
+    <div style={blogStyle} className='.ViewLess'>
+      {blog.title} {blog.author}
+      <button onClick={handleViewClick}>view</button>
     </div>
   )
 
